@@ -13,10 +13,12 @@
 #define MQTT_PASSWORD "Instrument1234"
 #define MQTT_TOPIC "fimav/orchestre"
 
-const int br1_tl4 = 14; // 69
+const int br1_tl4 = 14; // 67
 const int br2_tl5 = 15; // 71
 const int br3_bl8 = 18; // 73
 const int br4_bl6 = 20; // 78
+
+#define DELAY_NOTE 1000
 
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
@@ -50,13 +52,6 @@ void setup()
   mdns.begin(WiFi.localIP());
   mdns.setNameResolvedCallback(connectMQTT);
   mdns.resolveName(MQTT_BROKER_HOSTNAME, 5000);
-
-  IPAddress brokerIP;
-  if (!WiFi.hostByName(MQTT_BROKER_HOSTNAME, brokerIP)) {
-    Serial.println("Erreur : impossible de résoudre le nom du broker.");
-    return;
-  }
-  connectMQTT(MQTT_BROKER_HOSTNAME, brokerIP);
 }
 
 void loop()
@@ -101,48 +96,32 @@ void loop()
 
     if (note == 67) {
       Serial.print("→ Note 67 reçue ! Status: ");
-
-      if (strcmp(event, "note_on") == 0) {
         Serial.println("on");
         digitalWrite(br1_tl4, HIGH);
-      }
-      else if (strcmp(event, "note_off") == 0) {
-        Serial.println("off");
+        delay(DELAY_NOTE);
         digitalWrite(br1_tl4, LOW);
-      }
+        Serial.println("off");
     } else if (note == 71) {
       Serial.println("→ Note 71 reçue !");
-
-      if (strcmp(event, "note_on") == 0) {
         Serial.println("on");
         digitalWrite(br2_tl5, HIGH);
-      }
-      else if (strcmp(event, "note_off") == 0) {
+        delay(DELAY_NOTE);
         Serial.println("off");
         digitalWrite(br2_tl5, LOW);
-      }
     } else if (note == 73) {
       Serial.println("→ Note 73 reçue !");
-
-      if (strcmp(event, "note_on") == 0) {
         Serial.println("on");
         digitalWrite(br3_bl8, HIGH);
-      }
-      else if (strcmp(event, "note_off") == 0) {
+        delay(DELAY_NOTE);
         Serial.println("off");
         digitalWrite(br3_bl8, LOW);
-      }
     } else if (note == 78) {
       Serial.println("→ Note 78 reçue !");
-
-      if (strcmp(event, "note_on") == 0) {
         Serial.println("on");
         digitalWrite(br4_bl6, HIGH);
-      }
-      else if (strcmp(event, "note_off") == 0) {
+        delay(DELAY_NOTE);
         Serial.println("off");
         digitalWrite(br4_bl6, LOW);
-      }
     }
   }
 }
